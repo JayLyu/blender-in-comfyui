@@ -11,6 +11,7 @@ class BL_Save_Mesh:
         return {
             "required": {
                 "mesh": ("MESH",),
+                "folder_type": (["input", "output"], {"default": "output"}),
                 "filename_prefix": ("STRING", {"default": "mesh/ComfyUI"}),
             },
             "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
@@ -22,10 +23,16 @@ class BL_Save_Mesh:
     CATEGORY = "Blender"
     DESCRIPTION = "保存 MESH 为 GLB 文件"
 
-    def save_mesh(self, mesh, filename_prefix, prompt=None, extra_pnginfo=None):
+    def save_mesh(self, mesh, folder_type="output", filename_prefix="mesh/ComfyUI", prompt=None, extra_pnginfo=None):
+        # 根据选择获取对应的目录
+        if folder_type == "input":
+            base_dir = folder_paths.get_input_directory()
+        else:  # output
+            base_dir = folder_paths.get_output_directory()
+            
         # 获取保存路径
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(
-            filename_prefix, folder_paths.get_output_directory()
+            filename_prefix, base_dir
         )
         
         # 准备元数据
@@ -46,7 +53,7 @@ class BL_Save_Mesh:
             
             # 返回相对路径
             relative_path = os.path.join(subfolder, f)
-            print(f"Saved mesh to GLB: {relative_path}")
+            print(f"Saved mesh to GLB in {folder_type} folder: {relative_path}")
             
             return (relative_path,)
         else:

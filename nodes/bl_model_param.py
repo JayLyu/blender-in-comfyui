@@ -6,6 +6,7 @@ class BL_Model_Param:
     def INPUT_TYPES(cls):
         return {
             "required": {
+                "folder_type": (["input", "output"], {"default": "input"}),
                 "model_file_path": ("STRING", {"default": ""}),
             },
             "optional": {
@@ -28,12 +29,16 @@ class BL_Model_Param:
     CATEGORY = "Blender"
     DESCRIPTION = "Load 3D model (GLB, FBX, OBJ) and set transform parameters"
 
-    def load_model(self, model_file_path, position_x=0.0, position_y=0.0, position_z=0.0,
+    def load_model(self, model_file_path, folder_type="input", position_x=0.0, position_y=0.0, position_z=0.0,
                   rotation_x=0.0, rotation_y=0.0, rotation_z=0.0,
                   scale_x=1.0, scale_y=1.0, scale_z=1.0, collection_name="3D_Model"):
-        # 获取ComfyUI输入目录
-        input_dir = folder_paths.get_input_directory()
-        full_model_path = os.path.join(input_dir, model_file_path)
+        # 根据选择获取对应的目录
+        if folder_type == "input":
+            base_dir = folder_paths.get_input_directory()
+        else:  # output
+            base_dir = folder_paths.get_output_directory()
+            
+        full_model_path = os.path.join(base_dir, model_file_path)
         
         # 检查文件是否存在
         if not os.path.exists(full_model_path):
@@ -61,6 +66,7 @@ class BL_Model_Param:
         }
         
         print(f"Loaded {file_ext.upper()} model: {model_data['name']}")
+        print(f"From {folder_type} folder: {model_file_path}")
         print(f"Collection: {collection_name}")
         print(f"Position: ({position_x}, {position_y}, {position_z})")
         print(f"Rotation: ({rotation_x}, {rotation_y}, {rotation_z})")
