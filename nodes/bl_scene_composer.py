@@ -63,8 +63,29 @@ class BL_Scene_Composer:
         
         # 确定输出blend文件路径
         if blend_path and blend_path.strip():
-            output_blend = blend_path
-            log_messages.append(f"Using existing blend file: {blend_path}")
+            # 检查源文件是否存在
+            if not os.path.exists(blend_path):
+                error_msg = f"Source blend file not found: {blend_path}"
+                log_messages.append(f"ERROR: {error_msg}")
+                return ("", "\n".join(log_messages))
+            
+            # 复制源文件到输出目录
+            import shutil
+            try:
+                shutil.copy2(blend_path, full_output_path)
+                log_messages.append(f"Copied source blend file: {blend_path} -> {full_output_path}")
+            except Exception as e:
+                error_msg = f"Failed to copy blend file: {e}"
+                log_messages.append(f"ERROR: {error_msg}")
+                return ("", "\n".join(log_messages))
+            
+            # 根据设置确定返回的路径格式
+            if use_full_path:
+                output_blend = full_output_path
+            else:
+                output_blend = f"{output_folder}/{output_filename}.blend"
+            
+            log_messages.append(f"Using copied blend file: {output_blend}")
             mode = "append"
         else:
             # 根据设置确定返回的路径格式
@@ -189,10 +210,10 @@ if mode == "create":
     bpy.context.scene.unit_settings.scale_length = 1.0
     print("Initialized empty Blender scene")
 else:
-    # Load existing blend file
+    # Load existing blend file (which is now a copy in the output directory)
     try:
         bpy.ops.wm.open_mainfile(filepath=output_blend)
-        print(f"Loaded existing blend file: {output_blend}")
+        print(f"Loaded copied blend file: {output_blend}")
     except Exception as e:
         print(f"Error loading blend file: {e}")
         # Fallback to empty scene if loading fails
@@ -313,109 +334,81 @@ for model_data in models_data:
             objects_after = set(bpy.context.scene.objects)
             new_objects = objects_after - objects_before
             
-            imported_objects = []
+            # Find root objects (objects without parents or with parents not in the new objects)
+            root_objects = []
             for obj in new_objects:
                 if obj.type in ['MESH', 'EMPTY', 'ARMATURE']:
-                    imported_objects.append(obj)
+                    # Check if this is a root object
+                    is_root = True
+                    if obj.parent is not None:
+                        # If parent is also in new_objects, this is not a root
+                        if obj.parent in new_objects:
+                            is_root = False
+                    
+                    if is_root:
+                        root_objects.append(obj)
             
-            print(f"Found {len(imported_objects)} new objects from {name}")
+            print(f"Found {len(root_objects)} root objects from {name} (total {len(new_objects)} objects)")
             
-            # Move objects to target collection and apply transformations based on type
-            for obj in imported_objects:
-                # Move object to target collection
+            # Create a parent Empty object to contain all imported objects as a group
+            parent_empty = bpy.data.objects.new(f"{name}_container", None)
+            parent_empty.empty_display_type = 'ARROWS'
+            target_collection.objects.link(parent_empty)
+            
+            # Set parent empty transformations
+            parent_empty.location = position
+            
+            # Set rotation using XYZ Euler (convert degrees to radians)
+            def normalize_rotation(angle_degrees):
+                """Convert degrees to radians and normalize to -π to π range"""
+                angle_rad = math.radians(angle_degrees)
+                # Normalize to -π to π range
+                while angle_rad > math.pi:
+                    angle_rad -= 2 * math.pi
+                while angle_rad < -math.pi:
+                    angle_rad += 2 * math.pi
+                return angle_rad
+            
+            # Calculate normalized rotations
+            x_rot = normalize_rotation(rotation[0])
+            y_rot = normalize_rotation(rotation[1])
+            z_rot = normalize_rotation(rotation[2])
+            
+            # Ensure rotation mode is set to XYZ Euler
+            parent_empty.rotation_mode = 'XYZ'
+            parent_empty.rotation_euler = (x_rot, y_rot, z_rot)
+            parent_empty.scale = scale
+            
+            print(f"Created parent container '{parent_empty.name}' with transformations: pos{position} rot{rotation} scale{scale}")
+            
+            # Move root objects to target collection and parent them to the container
+            # This preserves the internal hierarchy of the model
+            for root_obj in root_objects:
+                # Store the original visibility state
+                original_hide_viewport = root_obj.hide_viewport
+                original_hide_render = root_obj.hide_render
+                original_hide_set = root_obj.hide_set
+                
+                # Move root object to target collection
                 # First, unlink from all collections
-                for collection in obj.users_collection:
-                    collection.objects.unlink(obj)
+                for collection in root_obj.users_collection:
+                    collection.objects.unlink(root_obj)
                 
                 # Then link to target collection
-                target_collection.objects.link(obj)
+                target_collection.objects.link(root_obj)
                 
-                # Apply transformations based on object type
-                if obj.type == 'MESH':
-                    # Apply full transformations to mesh objects
-                    obj.location = position
-                    
-                    # Set rotation using XYZ Euler (convert degrees to radians)
-                    def normalize_rotation(angle_degrees):
-                        """Convert degrees to radians and normalize to -π to π range"""
-                        angle_rad = math.radians(angle_degrees)
-                        # Normalize to -π to π range
-                        while angle_rad > math.pi:
-                            angle_rad -= 2 * math.pi
-                        while angle_rad < -math.pi:
-                            angle_rad += 2 * math.pi
-                        return angle_rad
-                    
-                    # Calculate normalized rotations
-                    x_rot = normalize_rotation(rotation[0])
-                    y_rot = normalize_rotation(rotation[1])
-                    z_rot = normalize_rotation(rotation[2])
-                    
-                    # Ensure rotation mode is set to XYZ Euler
-                    obj.rotation_mode = 'XYZ'
-                    obj.rotation_euler = (x_rot, y_rot, z_rot)
-                    obj.scale = scale
-                    
-                    print(f"Applied full transformations to MESH {obj.name}: pos{position} rot{rotation} scale{scale}")
-                    
-                elif obj.type == 'ARMATURE':
-                    # For armature, only apply position and rotation, not scale
-                    # This preserves the character's proportions
-                    obj.location = position
-                    
-                    # Set rotation using XYZ Euler (convert degrees to radians)
-                    def normalize_rotation(angle_degrees):
-                        """Convert degrees to radians and normalize to -π to π range"""
-                        angle_rad = math.radians(angle_degrees)
-                        # Normalize to -π to π range
-                        while angle_rad > math.pi:
-                            angle_rad -= 2 * math.pi
-                        while angle_rad < -math.pi:
-                            angle_rad += 2 * math.pi
-                        return angle_rad
-                    
-                    # Calculate normalized rotations
-                    x_rot = normalize_rotation(rotation[0])
-                    y_rot = normalize_rotation(rotation[1])
-                    z_rot = normalize_rotation(rotation[2])
-                    
-                    # Ensure rotation mode is set to XYZ Euler
-                    obj.rotation_mode = 'XYZ'
-                    obj.rotation_euler = (x_rot, y_rot, z_rot)
-                    # Don't apply scale to armature to preserve character proportions
-                    
-                    print(f"Applied position and rotation to ARMATURE {obj.name}: pos{position} rot{rotation} (no scale)")
-                    
-                elif obj.type == 'EMPTY':
-                    # Apply full transformations to empty objects
-                    obj.location = position
-                    
-                    # Set rotation using XYZ Euler (convert degrees to radians)
-                    def normalize_rotation(angle_degrees):
-                        """Convert degrees to radians and normalize to -π to π range"""
-                        angle_rad = math.radians(angle_degrees)
-                        # Normalize to -π to π range
-                        while angle_rad > math.pi:
-                            angle_rad -= 2 * math.pi
-                        while angle_rad < -math.pi:
-                            angle_rad += 2 * math.pi
-                        return angle_rad
-                    
-                    # Calculate normalized rotations
-                    x_rot = normalize_rotation(rotation[0])
-                    y_rot = normalize_rotation(rotation[1])
-                    z_rot = normalize_rotation(rotation[2])
-                    
-                    # Ensure rotation mode is set to XYZ Euler
-                    obj.rotation_mode = 'XYZ'
-                    obj.rotation_euler = (x_rot, y_rot, z_rot)
-                    obj.scale = scale
-                    
-                    print(f"Applied full transformations to EMPTY {obj.name}: pos{position} rot{rotation} scale{scale}")
+                # Parent root object to the container (this preserves relative transformations)
+                # Do this BEFORE restoring visibility to ensure parenting works
+                root_obj.parent = parent_empty
                 
-                print(f"Moved {obj.name} to collection '{unique_collection_name}'")
+                # Now restore the original visibility state
+                root_obj.hide_viewport = original_hide_viewport
+                root_obj.hide_render = original_hide_render
+                root_obj.hide_set = original_hide_set
+                
+                print(f"Parented root object {root_obj.name} to container '{parent_empty.name}' (hidden: {original_hide_viewport})")
             
-            total_imported += len(imported_objects)
+            total_imported += len(root_objects)
         
     except Exception as e:
         print(f"Error processing object {name}: {e}")
