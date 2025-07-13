@@ -137,26 +137,22 @@ class BL_Scene_Composer:
                 }
             formatted_models.append(formatted_model)
         
+        # 准备参数数据
+        params = {
+            "output_blend": output_blend,
+            "output_dir": output_dir,
+            "mode": mode,
+            "background_color": background_color,
+            "models_data": formatted_models
+        }
+        
+        # 将参数写入JSON文件
+        param_json_path = os.path.join(output_dir, f"{output_filename}_composer_params.json")
+        with open(param_json_path, "w", encoding="utf-8") as f:
+            json.dump(params, f, ensure_ascii=False, indent=2)
+        
         # 准备Blender脚本内容
-        script_content = _BLENDER_COMPOSER_SCRIPT.replace(
-            "{output_blend}", output_blend
-        ).replace(
-            "{output_dir}", output_dir
-        ).replace(
-            "{mode}", mode
-        ).replace(
-            "{background_color}", background_color
-        )
-        
-        # 将模型数据写入单独的JSON文件，避免字符串替换问题
-        models_json_path = os.path.join(output_dir, f"{output_filename}_models.json")
-        with open(models_json_path, "w", encoding="utf-8") as f:
-            json.dump(formatted_models, f, ensure_ascii=False, indent=2)
-        
-        # 在脚本中替换JSON文件路径
-        script_content = script_content.replace(
-            "{models_json_path}", models_json_path
-        )
+        script_content = _BLENDER_COMPOSER_SCRIPT
         
         # 写入临时脚本文件
         script_path = os.path.join(output_dir, f"{output_filename}_composer_script.py")
@@ -164,7 +160,7 @@ class BL_Scene_Composer:
             f.write(script_content)
         
         # 调用Blender执行脚本
-        cmd = [blender_bin, "--background", "--factory-startup", "--python", script_path]
+        cmd = [blender_bin, "--background", "--factory-startup", "--python", script_path, "--", param_json_path]
         try:
             subprocess.run(cmd, check=True)
             log_messages.append(f"Blender scene composition successful: {output_blend}")
@@ -191,16 +187,24 @@ import os
 import json
 import math
 
-# Embedded parameters
-output_blend = "{output_blend}"
-output_dir = "{output_dir}"
-mode = "{mode}"
-background_color = "{background_color}"
-models_json_path = "{models_json_path}"
+# Get parameters
+param_json = None
+for i, arg in enumerate(sys.argv):
+    if arg.endswith("_composer_params.json"):
+        param_json = arg
+        break
+if not param_json:
+    print("No param json found!")
+    sys.exit(1)
 
-# Load model data from JSON file
-with open(models_json_path, "r", encoding="utf-8") as f:
-    models_data = json.load(f)
+with open(param_json, "r", encoding="utf-8") as f:
+    params = json.load(f)
+
+output_blend = params["output_blend"]
+output_dir = params["output_dir"]
+mode = params["mode"]
+background_color = params["background_color"]
+models_data = params["models_data"]
 
 # Initialize Blender scene
 if mode == "create":
@@ -354,59 +358,46 @@ for model_data in models_data:
             parent_empty = bpy.data.objects.new(f"{name}_container", None)
             parent_empty.empty_display_type = 'ARROWS'
             target_collection.objects.link(parent_empty)
-            
+
             # Set parent empty transformations
             parent_empty.location = position
-            
-            # Set rotation using XYZ Euler (convert degrees to radians)
             def normalize_rotation(angle_degrees):
-                """Convert degrees to radians and normalize to -π to π range"""
                 angle_rad = math.radians(angle_degrees)
-                # Normalize to -π to π range
                 while angle_rad > math.pi:
                     angle_rad -= 2 * math.pi
                 while angle_rad < -math.pi:
                     angle_rad += 2 * math.pi
                 return angle_rad
-            
-            # Calculate normalized rotations
             x_rot = normalize_rotation(rotation[0])
             y_rot = normalize_rotation(rotation[1])
             z_rot = normalize_rotation(rotation[2])
-            
-            # Ensure rotation mode is set to XYZ Euler
             parent_empty.rotation_mode = 'XYZ'
             parent_empty.rotation_euler = (x_rot, y_rot, z_rot)
             parent_empty.scale = scale
-            
+
             print(f"Created parent container '{parent_empty.name}' with transformations: pos{position} rot{rotation} scale{scale}")
-            
-            # Move root objects to target collection and parent them to the container
-            # This preserves the internal hierarchy of the model
-            for root_obj in root_objects:
-                # Store the original visibility state
-                original_hide_viewport = root_obj.hide_viewport
-                original_hide_render = root_obj.hide_render
-                original_hide_set = root_obj.hide_set
-                
-                # Move root object to target collection
-                # First, unlink from all collections
-                for collection in root_obj.users_collection:
-                    collection.objects.unlink(root_obj)
-                
-                # Then link to target collection
-                target_collection.objects.link(root_obj)
-                
-                # Parent root object to the container (this preserves relative transformations)
-                # Do this BEFORE restoring visibility to ensure parenting works
-                root_obj.parent = parent_empty
-                
-                # Now restore the original visibility state
-                root_obj.hide_viewport = original_hide_viewport
-                root_obj.hide_render = original_hide_render
-                root_obj.hide_set = original_hide_set
-                
-                print(f"Parented root object {root_obj.name} to container '{parent_empty.name}' (hidden: {original_hide_viewport})")
+
+            # Parent all new_objects to container, and restore hidden state
+            for obj in new_objects:
+                # Save original hidden state
+                original_hide_viewport = obj.hide_viewport
+                original_hide_render = obj.hide_render
+                original_hide_set = obj.hide_set
+
+                # Move to target collection
+                for collection in obj.users_collection:
+                    collection.objects.unlink(obj)
+                target_collection.objects.link(obj)
+
+                # parent to container
+                obj.parent = parent_empty
+
+                # Restore hidden state
+                obj.hide_viewport = original_hide_viewport
+                obj.hide_render = original_hide_render
+                obj.hide_set = original_hide_set
+
+                print(f"Parented {obj.name} to container '{parent_empty.name}' (hidden: {original_hide_viewport})")
             
             total_imported += len(root_objects)
         
@@ -438,9 +429,8 @@ if bg:
 # Create output directory
 os.makedirs(output_dir, exist_ok=True)
 
-# Save blend file
-full_blend_path = os.path.join(output_dir, os.path.basename(output_blend))
-bpy.ops.wm.save_as_mainfile(filepath=full_blend_path)
-print(f"Saved blend file: {full_blend_path}")
+# Save blend file (direct overwrite)
+bpy.ops.wm.save_as_mainfile(filepath=output_blend)
+print(f"Saved blend file: {output_blend}")
 print(f"Successfully composed scene with {total_imported} objects from {len(models_data)} items")
 ''' 
