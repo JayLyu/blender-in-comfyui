@@ -17,7 +17,40 @@ This project provides a set of custom nodes for ComfyUI that enable seamless int
 - Blender 4.4+ installed
 - Python 3.11+
 
+### Important Note / 重要说明
+
+**⚠️ ComfyUI Security Restriction / ComfyUI 安全限制**
+
+This plugin uses `subprocess` to call Blender for 3D model processing. Due to ComfyUI's security restrictions on `subprocess` usage, there are two installation methods:
+
+> 本插件使用 `subprocess` 调用 Blender 进行 3D 模型处理。由于 ComfyUI 对 `subprocess` 使用的安全限制，有两种安装方法：
+
+#### Method 1: Manual Installation (Recommended) / 方法一：手动安装（推荐）
+
+This is the most reliable method and is recommended for all users.
+
+> 这是最可靠的方法，推荐所有用户使用。
+
+#### Method 2: ComfyUI Manager Installation / 方法二：ComfyUI Manager 安装
+
+If you want to use ComfyUI Manager for installation, you need to configure ComfyUI to allow `subprocess` usage:
+
+> 如果你想使用 ComfyUI Manager 安装，需要配置 ComfyUI 允许 `subprocess` 使用：
+
+1. **For ComfyUI with Manager / 使用 Manager 的 ComfyUI：**
+   - Add `--allow-subprocess` flag when starting ComfyUI
+   - Example: `python main.py --allow-subprocess`
+   - 启动 ComfyUI 时添加 `--allow-subprocess` 参数
+   - 示例：`python main.py --allow-subprocess`
+
+2. **For ComfyUI Standalone / 独立版 ComfyUI：**
+   - Modify ComfyUI's security settings to allow subprocess
+   - 修改 ComfyUI 的安全设置以允许 subprocess
+
 ### Setup / 设置
+
+#### Manual Installation / 手动安装
+
 1. Clone this repository to your ComfyUI custom_nodes directory:
 
 ```bash
@@ -28,6 +61,17 @@ git clone https://github.com/JayLyu/blender-in-comfyui.git
 2. Restart ComfyUI to load the new nodes
 
 3. The nodes will appear in the "Blender" category in the node menu
+
+#### ComfyUI Manager Installation / ComfyUI Manager 安装
+
+1. Start ComfyUI with subprocess allowed:
+```bash
+python main.py --allow-subprocess
+```
+
+2. Use ComfyUI Manager to install the plugin
+
+3. Restart ComfyUI to load the new nodes
 
 ## Configuration / 配置
 

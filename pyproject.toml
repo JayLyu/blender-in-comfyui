@@ -1,7 +1,7 @@
 [project]
 name = "blender-in-comfyui"
 description = "Combine multiple 3D models into a single Blender file and render in ComfyUI."
-version = "1.0.0"
+version = "1.0.1"
 license = { file = "LICENSE" }
 dynamic = ["dependencies"]
 [tool.setuptools.dynamic]
