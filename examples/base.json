@@ -1,0 +1,1051 @@
+{
+  "id": "b8768a91-ef2f-4d4f-ba82-1a474c0e7b51",
+  "revision": 0,
+  "last_node_id": 53,
+  "last_link_id": 100,
+  "nodes": [
+    {
+      "id": 44,
+      "type": "PreviewImage",
+      "pos": [
+        2580,
+        240
+      ],
+      "size": [
+        500,
+        300
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 92
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 45,
+      "type": "ShowText|pysssss",
+      "pos": [
+        2580,
+        600
+      ],
+      "size": [
+        500,
+        200
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 93
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "aac13aa7ce35b07d43633c3bbe654a38c00d74f5",
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "Starting render process...\nBlend file: /Users/baikong/Development/ComfyUI/output/blender/scene.blend\nCamera name: camera\nSamples: 128\nResolution: 1536x846\nFormat: PNG\nEngine: Eevee Next\nBlender render successful\nRender result: success\nImage loaded successfully: /Users/baikong/Development/ComfyUI/output/blender/render.png"
+      ]
+    },
+    {
+      "id": 43,
+      "type": "ShowText|pysssss",
+      "pos": [
+        2580,
+        80
+      ],
+      "size": [
+        480,
+        88
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 91
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "aac13aa7ce35b07d43633c3bbe654a38c00d74f5",
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "/Users/baikong/Development/ComfyUI/output/blender/scene.blend"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "ShowText|pysssss",
+      "pos": [
+        1560,
+        60
+      ],
+      "size": [
+        540,
+        140
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 98
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": [
+            90
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "aac13aa7ce35b07d43633c3bbe654a38c00d74f5",
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "/Users/baikong/Development/ComfyUI/output/blender/scene.blend"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "ShowText|pysssss",
+      "pos": [
+        1560,
+        520
+      ],
+      "size": [
+        560,
+        340
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 99
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "aac13aa7ce35b07d43633c3bbe654a38c00d74f5",
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "Starting scene composition...\nUse full path: True\nProcessing 4 objects\nCreating new blend file: /Users/baikong/Development/ComfyUI/output/blender/scene.blend\nBlender scene composition successful: /Users/baikong/Development/ComfyUI/output/blender/scene.blend\nFull path: /Users/baikong/Development/ComfyUI/output/blender/scene.blend\nModel: suzanne\n  Position: (-2.0, 0.0, 2.0)\n  Rotation: (0.0, -45.0, 0.0)\n  Scale: (1.0, 1.0, 1.0)\nModel: glass\n  Position: (2.0, 0.0, 2.0)\n  Rotation: (0.0, 45.0, 0.0)\n  Scale: (1.0000000000000002, 1.0, 2.0000000000000004)\nModel: cylinder\n  Position: (0.0, 0.0, 0.0)\n  Rotation: (0.0, 0.0, 0.0)\n  Scale: (1.0, 1.0, 1.0)\nModel: Camera\n  Position: (0.0, -15.0, 2.0)\n  Rotation: (90.0, 0.0, 0.0)\n  Scale: (1.0, 1.0, 1.0)"
+      ]
+    },
+    {
+      "id": 35,
+      "type": "BL_Model_Merger",
+      "pos": [
+        1280,
+        660
+      ],
+      "size": [
+        177.076171875,
+        46
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_1",
+          "type": "MODELS",
+          "link": 53
+        },
+        {
+          "name": "model_2",
+          "type": "MODELS",
+          "link": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "models",
+          "type": "MODELS",
+          "links": [
+            97
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Model_Merger"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 1,
+      "type": "Load3D",
+      "pos": [
+        140,
+        620
+      ],
+      "size": [
+        300,
+        600
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "mesh_path",
+          "type": "STRING",
+          "links": [
+            79
+          ]
+        },
+        {
+          "name": "normal",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "lineart",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": null
+        },
+        {
+          "name": "recording_video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43",
+        "Node name for S&R": "Load3D",
+        "Camera Info": {
+          "position": {
+            "x": 6.220502265406852,
+            "y": 3.220594080891319,
+            "z": 12.371072022867907
+          },
+          "target": {
+            "x": 0,
+            "y": 0.2500000596046448,
+            "z": 0
+          },
+          "zoom": 1,
+          "cameraType": "perspective"
+        },
+        "Show Grid": false,
+        "Show Preview": false
+      },
+      "widgets_values": [
+        "3d/cylinder.glb",
+        "upload3dmodel",
+        "clear",
+        "",
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": 41,
+      "type": "Load3D",
+      "pos": [
+        500,
+        260
+      ],
+      "size": [
+        300,
+        600
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "mesh_path",
+          "type": "STRING",
+          "links": [
+            81
+          ]
+        },
+        {
+          "name": "normal",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "lineart",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": null
+        },
+        {
+          "name": "recording_video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43",
+        "Node name for S&R": "Load3D",
+        "Camera Info": {
+          "position": {
+            "x": 10,
+            "y": 7.884419786114266,
+            "z": 10.000000000000002
+          },
+          "target": {
+            "x": 0,
+            "y": 1.9711049465285666,
+            "z": 0
+          },
+          "zoom": 1,
+          "cameraType": "perspective"
+        },
+        "Show Preview": false,
+        "Show Grid": false
+      },
+      "widgets_values": [
+        "3d/glass.glb",
+        "upload3dmodel",
+        "clear",
+        "",
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": 48,
+      "type": "BL_Model_Param",
+      "pos": [
+        920,
+        680
+      ],
+      "size": [
+        270,
+        298
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_file_path",
+          "type": "STRING",
+          "widget": {
+            "name": "model_file_path"
+          },
+          "link": 79
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODELS",
+          "links": [
+            87
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Model_Param"
+      },
+      "widgets_values": [
+        "",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        "base"
+      ]
+    },
+    {
+      "id": 33,
+      "type": "BL_Model_Merger",
+      "pos": [
+        1280,
+        460
+      ],
+      "size": [
+        177.076171875,
+        46
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_1",
+          "type": "MODELS",
+          "link": 88
+        },
+        {
+          "name": "model_2",
+          "type": "MODELS",
+          "link": 87
+        }
+      ],
+      "outputs": [
+        {
+          "name": "models",
+          "type": "MODELS",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Model_Merger"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 37,
+      "type": "BL_Model_Merger",
+      "pos": [
+        1280,
+        300
+      ],
+      "size": [
+        180,
+        46
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_1",
+          "type": "MODELS",
+          "link": 84
+        },
+        {
+          "name": "model_2",
+          "type": "MODELS",
+          "link": 85
+        }
+      ],
+      "outputs": [
+        {
+          "name": "models",
+          "type": "MODELS",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Model_Merger"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 26,
+      "type": "Load3D",
+      "pos": [
+        140,
+        -100
+      ],
+      "size": [
+        300,
+        600
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "mesh_path",
+          "type": "STRING",
+          "links": [
+            83
+          ]
+        },
+        {
+          "name": "normal",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "lineart",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": null
+        },
+        {
+          "name": "recording_video",
+          "type": "VIDEO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.43",
+        "Node name for S&R": "Load3D",
+        "Camera Info": {
+          "position": {
+            "x": -6.302572944562706,
+            "y": 8.43730075236213,
+            "z": 12.07579706580053
+          },
+          "target": {
+            "x": 0,
+            "y": 1.8096403311873077,
+            "z": 0
+          },
+          "zoom": 1,
+          "cameraType": "perspective"
+        },
+        "Show Preview": false,
+        "Show Grid": false
+      },
+      "widgets_values": [
+        "3d/suzanne.glb",
+        "upload3dmodel",
+        "clear",
+        "",
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": 50,
+      "type": "BL_Render",
+      "pos": [
+        2260,
+        240
+      ],
+      "size": [
+        270,
+        290
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "blend_file_path",
+          "type": "STRING",
+          "widget": {
+            "name": "blend_file_path"
+          },
+          "link": 90
+        }
+      ],
+      "outputs": [
+        {
+          "name": "blend_path",
+          "type": "STRING",
+          "links": [
+            91
+          ]
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            92
+          ]
+        },
+        {
+          "name": "log",
+          "type": "STRING",
+          "links": [
+            93
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Render"
+      },
+      "widgets_values": [
+        "",
+        "camera",
+        false,
+        128,
+        "PNG",
+        1536,
+        846,
+        "blender",
+        "render"
+      ]
+    },
+    {
+      "id": 52,
+      "type": "BL_Scene_Composer",
+      "pos": [
+        1560,
+        280
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "models",
+          "type": "MODELS",
+          "link": 97
+        }
+      ],
+      "outputs": [
+        {
+          "name": "blend_path",
+          "type": "STRING",
+          "links": [
+            98
+          ]
+        },
+        {
+          "name": "log",
+          "type": "STRING",
+          "links": [
+            99
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Scene_Composer"
+      },
+      "widgets_values": [
+        true,
+        "blender",
+        "scene",
+        ""
+      ]
+    },
+    {
+      "id": 47,
+      "type": "BL_Model_Param",
+      "pos": [
+        920,
+        -80
+      ],
+      "size": [
+        270,
+        298
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_file_path",
+          "type": "STRING",
+          "widget": {
+            "name": "model_file_path"
+          },
+          "link": 83
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODELS",
+          "links": [
+            84
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Model_Param"
+      },
+      "widgets_values": [
+        "",
+        -2,
+        0,
+        2,
+        0,
+        -45,
+        0,
+        1,
+        1,
+        1,
+        "suzanne"
+      ]
+    },
+    {
+      "id": 49,
+      "type": "BL_Model_Param",
+      "pos": [
+        920,
+        320
+      ],
+      "size": [
+        270,
+        298
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_file_path",
+          "type": "STRING",
+          "widget": {
+            "name": "model_file_path"
+          },
+          "link": 81
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "MODELS",
+          "links": [
+            85
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Model_Param"
+      },
+      "widgets_values": [
+        "",
+        2,
+        0,
+        2,
+        0,
+        45,
+        0,
+        1.0000000000000002,
+        1,
+        2.0000000000000004,
+        "glass"
+      ]
+    },
+    {
+      "id": 53,
+      "type": "BL_Camera_Creator",
+      "pos": [
+        920,
+        1040
+      ],
+      "size": [
+        270,
+        250
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera",
+          "type": "MODELS",
+          "links": [
+            100
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "JayLyu/blender-in-comfyui",
+        "ver": "84eae4208898f020a022e97f7143ebb7000dbf0d",
+        "Node name for S&R": "BL_Camera_Creator"
+      },
+      "widgets_values": [
+        "Camera",
+        0,
+        -15,
+        2,
+        90,
+        0,
+        0,
+        50,
+        "Cameras"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    }
+  ],
+  "links": [
+    [
+      53,
+      33,
+      0,
+      35,
+      0,
+      "MODELS"
+    ],
+    [
+      79,
+      1,
+      2,
+      48,
+      0,
+      "STRING"
+    ],
+    [
+      81,
+      41,
+      2,
+      49,
+      0,
+      "STRING"
+    ],
+    [
+      83,
+      26,
+      2,
+      47,
+      0,
+      "STRING"
+    ],
+    [
+      84,
+      47,
+      0,
+      37,
+      0,
+      "MODELS"
+    ],
+    [
+      85,
+      49,
+      0,
+      37,
+      1,
+      "MODELS"
+    ],
+    [
+      87,
+      48,
+      0,
+      33,
+      1,
+      "MODELS"
+    ],
+    [
+      88,
+      37,
+      0,
+      33,
+      0,
+      "MODELS"
+    ],
+    [
+      90,
+      13,
+      0,
+      50,
+      0,
+      "STRING"
+    ],
+    [
+      91,
+      50,
+      0,
+      43,
+      0,
+      "STRING"
+    ],
+    [
+      92,
+      50,
+      1,
+      44,
+      0,
+      "IMAGE"
+    ],
+    [
+      93,
+      50,
+      2,
+      45,
+      0,
+      "STRING"
+    ],
+    [
+      97,
+      35,
+      0,
+      52,
+      0,
+      "MODELS"
+    ],
+    [
+      98,
+      52,
+      0,
+      13,
+      0,
+      "STRING"
+    ],
+    [
+      99,
+      52,
+      1,
+      14,
+      0,
+      "STRING"
+    ],
+    [
+      100,
+      53,
+      0,
+      35,
+      1,
+      "MODELS"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Render",
+      "bounding": [
+        2220,
+        -80,
+        940,
+        980
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "Create Scene",
+      "bounding": [
+        880,
+        -220,
+        1280,
+        1580
+      ],
+      "color": "#b58b2a",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6209213230591552,
+      "offset": [
+        -429.5463390071057,
+        101.13631014862473
+      ]
+    },
+    "frontendVersion": "1.23.4"
+  },
+  "version": 0.4
+}

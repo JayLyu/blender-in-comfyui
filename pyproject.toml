@@ -1,0 +1,17 @@
+[project]
+name = "blender-in-comfyui"
+description = "Combine multiple 3D models into a single Blender file and render in ComfyUI."
+version = "1.0.0"
+license = { file = "LICENSE" }
+dynamic = ["dependencies"]
+[tool.setuptools.dynamic]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/JayLyu/blender-in-comfyui.git"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "baikong"
+DisplayName = "blender-in-comfyui"
+Icon = ""
