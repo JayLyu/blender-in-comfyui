@@ -12,6 +12,7 @@ node_module_mappings = {
     'bl_scene_composer': 'BL_Scene_Composer',
     'bl_render': 'BL_Render',
     'bl_export_model': 'BL_Export_Model',
+    'bl_save_mesh': 'BL_Save_Mesh',
 }
 
 imported_classes = {}
@@ -37,4 +38,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BL_Scene_Composer": "Blender Scene Composer",
     "BL_Render": "Blender Render",
     "BL_Export_Model": "Blender Export Model",
+    "BL_Save_Mesh": "Blender Save Mesh",
 }
