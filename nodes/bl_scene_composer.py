@@ -162,7 +162,35 @@ class BL_Scene_Composer:
         # 调用Blender执行脚本
         cmd = [blender_bin, "--background", "--factory-startup", "--python", script_path, "--", param_json_path]
         try:
-            subprocess.run(cmd, check=True)
+            print(f"Executing command: {' '.join(cmd)}")
+
+            if os.name == 'nt':  # Windows
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=output_dir,
+                    shell=False,
+                    encoding='utf-8',
+                    errors='replace'
+                )
+            else:  # macOS and Linux
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    cwd=output_dir
+                )
+                
+            print(f"Return code: {result.returncode}")
+            print(f"Stdout: {result.stdout}")
+            if result.stderr:
+                print(f"Error: {result.stderr}")
+            if result.returncode != 0:
+                error_msg = f"Blender script execution failed(return code: {result.returncode}): {result.stderr}"
+                log_messages.append(f"ERROR: {error_msg}")
+                return (output_blend, "\n".join(log_messages))
+                
             log_messages.append(f"Blender scene composition successful: {output_blend}")
             log_messages.append(f"Full path: {full_output_path}")
             
@@ -187,7 +215,7 @@ import os
 import json
 import math
 
-# Get parameters
+# Get parameters from command line arguments
 param_json = None
 for i, arg in enumerate(sys.argv):
     if arg.endswith("_composer_params.json"):
@@ -197,8 +225,12 @@ if not param_json:
     print("No param json found!")
     sys.exit(1)
 
-with open(param_json, "r", encoding="utf-8") as f:
-    params = json.load(f)
+try:
+    with open(param_json, "r", encoding="utf-8") as f:
+        params = json.load(f)
+except Exception as e:
+    print(f"Error reading parameter file: {e}")
+    sys.exit(1)
 
 output_blend = params["output_blend"]
 output_dir = params["output_dir"]
@@ -207,24 +239,28 @@ background_color = params["background_color"]
 models_data = params["models_data"]
 
 # Initialize Blender scene
-if mode == "create":
-    # Create new empty scene
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.context.scene.unit_settings.system = 'METRIC'
-    bpy.context.scene.unit_settings.scale_length = 1.0
-    print("Initialized empty Blender scene")
-else:
-    # Load existing blend file (which is now a copy in the output directory)
-    try:
-        bpy.ops.wm.open_mainfile(filepath=output_blend)
-        print(f"Loaded copied blend file: {output_blend}")
-    except Exception as e:
-        print(f"Error loading blend file: {e}")
-        # Fallback to empty scene if loading fails
+try:
+    if mode == "create":
+        # Create new empty scene
         bpy.ops.wm.read_factory_settings(use_empty=True)
         bpy.context.scene.unit_settings.system = 'METRIC'
         bpy.context.scene.unit_settings.scale_length = 1.0
-        print("Fallback to empty scene")
+        print("Initialized empty Blender scene")
+    else:
+        # Load existing blend file (which is now a copy in the output directory)
+        try:
+            bpy.ops.wm.open_mainfile(filepath=output_blend)
+            print(f"Loaded copied blend file: {output_blend}")
+        except Exception as e:
+            print(f"Error loading blend file: {e}")
+            # Fallback to empty scene if loading fails
+            bpy.ops.wm.read_factory_settings(use_empty=True)
+            bpy.context.scene.unit_settings.system = 'METRIC'
+            bpy.context.scene.unit_settings.scale_length = 1.0
+            print("Fallback to empty scene")
+except Exception as e:
+    print(f"Error initializing Blender scene: {e}")
+    sys.exit(1)
 
 # Function to get unique collection name
 def get_unique_collection_name(base_name):
@@ -324,14 +360,18 @@ for model_data in models_data:
             objects_before = set(bpy.context.scene.objects)
             
             # Import model based on file format
-            if file_format in ['.glb', '.gltf']:
-                bpy.ops.import_scene.gltf(filepath=model_file_path)
-            elif file_format == '.fbx':
-                bpy.ops.import_scene.fbx(filepath=model_file_path)
-            elif file_format == '.obj':
-                bpy.ops.import_scene.obj(filepath=model_file_path)
-            else:
-                print(f"Unsupported file format: {file_format}")
+            try:
+                if file_format in ['.glb', '.gltf']:
+                    bpy.ops.import_scene.gltf(filepath=model_file_path)
+                elif file_format == '.fbx':
+                    bpy.ops.import_scene.fbx(filepath=model_file_path)
+                elif file_format == '.obj':
+                    bpy.ops.import_scene.obj(filepath=model_file_path)
+                else:
+                    print(f"Unsupported file format: {file_format}")
+                    continue
+            except Exception as e:
+                print(f"Error importing {file_format} file {model_file_path}: {e}")
                 continue
         
             # Get newly imported objects
@@ -404,6 +444,43 @@ for model_data in models_data:
     except Exception as e:
         print(f"Error processing object {name}: {e}")
 
+# Set render engine and settings
+bpy.context.scene.render.engine = 'CYCLES'  # Use Cycles for better quality
+bpy.context.scene.cycles.samples = 128  # Default samples
+bpy.context.scene.cycles.use_denoising = True
+
+# Try to enable GPU rendering
+try:
+    prefs = bpy.context.preferences
+    cycles_prefs = prefs.addons['cycles'].preferences
+    
+    # Try different compute device types in order of preference
+    for compute_device in ['OPTIX', 'CUDA', 'OPENCL']:
+        try:
+            cycles_prefs.compute_device_type = compute_device
+            cycles_prefs.get_devices()
+            for device in cycles_prefs.devices:
+                if device.type in ['CUDA', 'OPTIX', 'OPENCL']:
+                    device.use = True
+                    print(f"Using GPU device: {device.name}")
+                    bpy.context.scene.cycles.device = 'GPU'
+                    print(f"GPU rendering enabled with {compute_device}")
+                    break
+            if bpy.context.scene.cycles.device == 'GPU':
+                break
+        except Exception as e:
+            print(f"Failed to initialize {compute_device}: {e}")
+            continue
+    else:
+        print("GPU not available, using CPU")
+        bpy.context.scene.cycles.device = 'CPU'
+except Exception as e:
+    print(f"Error setting up render engine: {e}")
+    # Fallback to Eevee if Cycles setup fails
+    bpy.context.scene.render.engine = 'BLENDER_EEVEE_NEXT'
+    bpy.context.scene.eevee.taa_render_samples = 64
+    bpy.context.scene.eevee.use_raytracing = True
+
 # Set world background
 if bpy.context.scene.world is None:
     bpy.context.scene.world = bpy.data.worlds.new("World")
@@ -427,10 +504,21 @@ if bg:
     print(f"Set background color: {background_color}")
 
 # Create output directory
-os.makedirs(output_dir, exist_ok=True)
+try:
+    os.makedirs(output_dir, exist_ok=True)
+except Exception as e:
+    print(f"Error creating output directory: {e}")
+    sys.exit(1)
 
 # Save blend file (direct overwrite)
-bpy.ops.wm.save_as_mainfile(filepath=output_blend)
-print(f"Saved blend file: {output_blend}")
+try:
+    bpy.ops.wm.save_as_mainfile(filepath=output_blend)
+    print(f"Saved blend file: {output_blend}")
+except Exception as e:
+    print(f"Error saving blend file: {e}")
+    sys.exit(1)
+
 print(f"Successfully composed scene with {total_imported} objects from {len(models_data)} items")
+print(f"Render engine: {bpy.context.scene.render.engine}")
+print(f"Render device: {bpy.context.scene.cycles.device if bpy.context.scene.render.engine == 'CYCLES' else 'CPU'}")
 ''' 
